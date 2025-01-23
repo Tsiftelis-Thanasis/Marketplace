@@ -1,51 +1,54 @@
 ﻿using MarketplaceAPI.Services.Interfaces;
-using MarketplaceAPI.Data;
-using MarketplaceAPI.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
+using MarketplaceAPI;
+using Marketplace.Models;
+using MarketplaceRepository.Interfaces;
+using Microsoft.Extensions.Configuration;
 
-namespace MarketplaceAPI.Services
+namespace MarketplaceServices.Services
 {
     public class UserService: IUserService
     {
-        private readonly MarketplaceDbContext _context;
-
-        public UserService(MarketplaceDbContext context)
+        private readonly IUserRepository _userRepository;
+        private readonly IConfiguration _configuration;
+        public UserService(IUserRepository userRepository, IConfiguration configuration)
         {
-            _context = context;
+            _userRepository = userRepository;
+            _configuration = configuration;
         }
 
         public async Task<User?> GetUserByIdAsync(int id)
         {
-            return await _context.Users
-                .Include(u => u.Items)
-                .Include(u => u.Transactions)
-                .FirstOrDefaultAsync(u => u.UserId == id);
+            return await _userRepository.GetUserByIdAsync(id);
         }
 
         public async Task<User?> GetUserByUsernameOrEmailAsync(string username, string email)
         {
-            return await _context.Users
-                .FirstOrDefaultAsync(u => u.Username == username || u.Email == email);
+            return await _userRepository.GetUserByUsernameOrEmailAsync(username, email);
         }
 
         public async Task<User> RegisterUserAsync(User user)
         {
-            _context.Users.Add(user);
-            await _context.SaveChangesAsync();
+            await _userRepository.AddUserAsync(user);
             return user;
         }
 
         public async Task<bool> UserExistsAsync(string username, string email)
         {
-            return await _context.Users.AnyAsync(u => u.Username == username || u.Email == email);
+            return await _userRepository.UserExistsAsync(username, email);
         }
 
-        public string GenerateJwtToken(User user)
+        public string GenerateUserJwtToken(User user)
         {
+            var jwtSettings = _configuration.GetSection("JwtSettings");
+            var secretKey = jwtSettings["SecretKey"];
+            var issuer = jwtSettings["Issuer"];
+            var audience = jwtSettings["Audience"];
+
             var claims = new[]
             {
                 new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
@@ -54,12 +57,12 @@ namespace MarketplaceAPI.Services
                 new Claim(ClaimTypes.Role, user.Role)
             };
 
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("your_secret_key_here"));
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
             var token = new JwtSecurityToken(
-                issuer: "MARKETPLACE",
-                audience: "This is the Audience",
+                issuer: issuer,
+                audience: audience,
                 claims: claims,
                 expires: DateTime.Now.AddDays(1),
                 signingCredentials: creds

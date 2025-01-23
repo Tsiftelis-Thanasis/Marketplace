@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace MarketplaceAPI.Models
+namespace Marketplace.Models
 {
     public class User
     {

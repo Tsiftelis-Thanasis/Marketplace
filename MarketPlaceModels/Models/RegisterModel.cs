@@ -1,4 +1,4 @@
-﻿namespace MarketplaceAPI.Models
+﻿namespace Marketplace.Models
 {
     public class RegisterModel
     {

@@ -1,6 +1,7 @@
-﻿using System;
+﻿using MarketPlaceModels.Enums;
+using System;
 
-namespace MarketplaceAPI.Models
+namespace Marketplace.Models
 {
     public class Transaction
     {
@@ -8,7 +9,8 @@ namespace MarketplaceAPI.Models
         public int BuyerId { get; set; }
         public int SellerId { get; set; }
         public int ItemId { get; set; }
-        public string Status { get; set; } = "Pending"; // Default status
+        public decimal Amount { get; set; }
+        public Status TransactionStatus { get; set; } = Status.Pending;
         public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
 
         public User? Buyer { get; set; }

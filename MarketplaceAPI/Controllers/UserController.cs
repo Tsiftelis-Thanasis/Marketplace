@@ -1,9 +1,8 @@
-﻿using MarketplaceAPI.Services;
-using MarketplaceAPI.Services.Interfaces;
-using MarketplaceAPI.Models;
+﻿using Marketplace.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
+using MarketplaceAPI.Services.Interfaces;
 
 namespace MarketplaceAPI.Controllers
 {
@@ -60,7 +59,7 @@ namespace MarketplaceAPI.Controllers
             }
 
             // Generate JWT token
-            var token = _userService.GenerateJwtToken(user);
+            var token = _userService.GenerateUserJwtToken(user);
 
             return Ok(new { Token = token });
         }

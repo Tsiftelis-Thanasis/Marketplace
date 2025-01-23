@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MarketplaceAPI.Models
+namespace Marketplace.Models
 {
     public class Item
     {
@@ -8,8 +8,9 @@ namespace MarketplaceAPI.Models
         public int UserId { get; set; }
         public string Title { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
+        
         public decimal Price { get; set; }
-        public string Status { get; set; } = "Pending"; // Default status
+        //public string Status { get; set; } = 
         public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
 
         public User? User { get; set; }

@@ -1,4 +1,4 @@
-﻿using MarketplaceAPI.Models;
+﻿using Marketplace.Models;
 
 namespace MarketplaceAPI.Services.Interfaces
 {
@@ -8,6 +8,6 @@ namespace MarketplaceAPI.Services.Interfaces
         Task<User?> GetUserByUsernameOrEmailAsync(string username, string email);
         Task<User> RegisterUserAsync(User user);
         Task<bool> UserExistsAsync(string username, string email);
-        string GenerateJwtToken(User user);
+        string GenerateUserJwtToken(User user);
     }
 }

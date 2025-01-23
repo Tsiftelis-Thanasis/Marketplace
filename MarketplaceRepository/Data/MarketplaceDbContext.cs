@@ -1,7 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using MarketplaceAPI.Models;
+using Microsoft.EntityFrameworkCore.Design;
+using Marketplace.Models;
 
-namespace MarketplaceAPI.Data
+namespace MarketplaceRepository.Data
 {
     public class MarketplaceDbContext : DbContext
     {
@@ -10,6 +11,7 @@ namespace MarketplaceAPI.Data
         public DbSet<User> Users { get; set; }
         public DbSet<Item> Items { get; set; }
         public DbSet<Transaction> Transactions { get; set; }
+        public DbSet<Post> Posts { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

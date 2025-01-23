@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Moq;
 using MarketplaceAPI.Controllers;
-using MarketplaceAPI.Models;
+using Marketplace.Models;
 using MarketplaceAPI.Services.Interfaces;
 using Xunit;
 using Microsoft.AspNetCore.Identity;
