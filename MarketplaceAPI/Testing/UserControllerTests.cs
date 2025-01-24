@@ -5,6 +5,7 @@ using Marketplace.Models;
 using MarketplaceAPI.Services.Interfaces;
 using Xunit;
 using Microsoft.AspNetCore.Identity;
+using MarketPlaceDTO;
 
 public class UserControllerTests
 {
@@ -13,11 +14,11 @@ public class UserControllerTests
     {
         // Arrange
         var mockUserService = new Mock<IUserService>();
-        var mockHashPassword = new Mock<IPasswordHasher<User>>();
-        var newUser = new User { Username = "testuser", Email = "test@example.com" };
+        var mockHashPassword = new Mock<IPasswordHasher<UserDto>>();
+        var newUser = new UserDto { Username = "testuser", Email = "test@example.com" };
         var newRegisterUser = new RegisterModel { Username = "testuser", Email = "test@example.com", Password = "123456" };
 
-        mockUserService.Setup(s => s.RegisterUserAsync(It.IsAny<User>())).ReturnsAsync(newUser);
+        mockUserService.Setup(s => s.RegisterUserAsync(It.IsAny<UserDto>())).ReturnsAsync(newUser);
         mockUserService.Setup(s => s.UserExistsAsync(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(false);
 
         var controller = new UserController(mockUserService.Object, mockHashPassword.Object);

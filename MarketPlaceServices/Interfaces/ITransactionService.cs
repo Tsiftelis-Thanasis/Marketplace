@@ -1,11 +1,10 @@
-﻿using MarketPlaceDTO;
+﻿using Marketplace.Models;
+using MarketPlaceDTO;
+using MarketPlaceServices.Interfaces;
 
 namespace MarketplaceServices.Interfaces
 {
-    public interface ITransactionService
+    public interface ITransactionService : IService<Transaction, TransactionDto>
     {
-        Task<TransactionDto> CreateTransactionAsync(TransactionDto transactionDto);
-        Task<TransactionDto> GetTransactionByIdAsync(Guid transactionId);
-           
     }
 }

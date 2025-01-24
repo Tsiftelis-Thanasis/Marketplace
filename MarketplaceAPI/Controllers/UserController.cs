@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
 using MarketplaceAPI.Services.Interfaces;
+using MarketPlaceModels.Enums;
+using MarketPlaceDTO;
 
 namespace MarketplaceAPI.Controllers
 {
@@ -11,9 +13,9 @@ namespace MarketplaceAPI.Controllers
     public class UserController : ControllerBase
     {
         private readonly IUserService _userService;
-        private readonly IPasswordHasher<User> _passwordHasher;
+        private readonly IPasswordHasher<UserDto> _passwordHasher;
 
-        public UserController(IUserService userService, IPasswordHasher<User> passwordHasher)
+        public UserController(IUserService userService, IPasswordHasher<UserDto> passwordHasher)
         {
             _userService = userService;
             _passwordHasher = passwordHasher;
@@ -27,18 +29,18 @@ namespace MarketplaceAPI.Controllers
                 return BadRequest("User already exists.");
             }
 
-            var user = new User
+            var userDto = new UserDto
             {
                 Username = model.Username,
                 Email = model.Email,
-                Role = "Buyer",  // Set default role as "Buyer"
+                Role = (int)Roles.User,
                 CreatedDate = DateTime.UtcNow
             };
 
             // Hash the password and store it securely
-            user.PasswordHash = _passwordHasher.HashPassword(user, model.Password);
+            userDto.PasswordHash = _passwordHasher.HashPassword(userDto, model.Password);
 
-            await _userService.RegisterUserAsync(user);
+            await _userService.RegisterUserAsync(userDto);
 
             return Ok("User registered successfully.");
         }
@@ -68,7 +70,7 @@ namespace MarketplaceAPI.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetUserById(int id)
         {
-            var user = await _userService.GetUserByIdAsync(id);
+            var user = await _userService.GetByIdAsync(id);
             if (user == null)
             {
                 return NotFound();

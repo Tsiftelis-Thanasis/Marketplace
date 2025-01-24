@@ -1,14 +1,11 @@
 ﻿using Marketplace.Models;
+using MarketPlaceRepository.Interfaces;
 
 namespace MarketplaceRepository.Interfaces
 {
-    public interface IUserRepository
+    public interface IUserRepository : IRepository<User>
     {
-        Task<User?> GetUserByIdAsync(int id);
-
         Task<User?> GetUserByUsernameOrEmailAsync(string username, string email);
-
-        Task AddUserAsync(User user);
 
         Task<bool> UserExistsAsync(string username, string email);
     }

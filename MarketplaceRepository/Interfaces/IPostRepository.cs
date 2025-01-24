@@ -1,16 +1,9 @@
 ﻿using Marketplace.Models;
+using MarketPlaceRepository.Interfaces;
 
 namespace MarketplaceRepository.Interfaces
 {
-    public interface IPostRepository
+    public interface IPostRepository : IRepository<Post>
     {
-        Task AddAsync(Post post);
-        Task<Post?> GetByIdAsync(int postId);
-
-        Task<IEnumerable<Post>> GetAllAsync();
-       
-        Task UpdateAsync(Post post);
-        Task DeleteAsync(Post post);
-
     }
 }

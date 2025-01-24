@@ -17,7 +17,7 @@ namespace MarketplaceRepository.Data
         {
             modelBuilder.Entity<Transaction>()
                 .HasOne(t => t.Buyer)
-                .WithMany(u => u.Transactions)
+                .WithMany()
                 .HasForeignKey(t => t.BuyerId)
                 .OnDelete(DeleteBehavior.Restrict);
 

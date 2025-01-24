@@ -1,10 +1,10 @@
 ﻿using Marketplace.Models;
+using MarketPlaceRepository.Interfaces;
 
 namespace MarketplaceRepository.Interfaces
 {
-    public interface IItemRepository
+    public interface IItemRepository : IRepository<Item>
     {
-        Task AddAsync(Item item);
-        Task<Item?> GetByIdAsync(Guid itemId);
+       
     }
 }

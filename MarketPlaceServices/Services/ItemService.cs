@@ -2,45 +2,21 @@
 using Marketplace.Models;
 using MarketplaceRepository.Interfaces;
 using MarketPlaceDTO;
+using MarketPlaceServices.Services;
+using AutoMapper;
+using MarketPlaceRepository.Repositories;
 
 namespace MarketplaceServices.Services
 {
-    public class ItemService : IItemService
+    public class ItemService : Service<Item, ItemDto>, IItemService
     {
-
         private readonly IItemRepository _itemRepository;
+        private readonly IMapper _mapper;
 
-        public ItemService(IItemRepository itemRepository)
+        public ItemService(IItemRepository itemRepository, IMapper mapper)  : base(itemRepository, mapper)
         {
             _itemRepository = itemRepository;
-        }
-
-        public async Task<ItemDto> CreateItemAsync(ItemDto itemDto)
-        {
-            var item = new Item
-            {
-                Title = itemDto.Name,
-                Price = itemDto.Price
-            };
-
-            await _itemRepository.AddAsync(item);
-
-            return itemDto;
-        }
-
-        public async Task<ItemDto> GetItemByIdAsync(Guid itemId)
-        {
-            var item = await _itemRepository.GetByIdAsync(itemId);
-            if (item == null)
-                throw new Exception("Item not found");
-
-            return new ItemDto
-            {
-                Id = item.ItemId,
-                Name = item.Title,
-                Price = item.Price
-            };
+            _mapper = mapper;
         }
     }
-
 }

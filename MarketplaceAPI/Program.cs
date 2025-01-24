@@ -12,6 +12,11 @@ using MarketplaceRepository.Interfaces;
 using MarketplaceRepository.Repositories;
 using MarketplaceServices.Services;
 using MarketplaceServices.Interfaces;
+using MarketPlaceRepository.Interfaces;
+using MarketPlaceRepository.Repositories;
+using MarketPlaceServices.Interfaces;
+using MarketPlaceServices.Services;
+using MarketPlaceDTO;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -74,7 +79,10 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
+builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+builder.Services.AddScoped(typeof(IService<,>), typeof(Service<,>));
 builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
+builder.Services.AddScoped<IPasswordHasher<UserDto>, PasswordHasher<UserDto>>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IPostRepository, PostRepository>();
@@ -84,6 +92,8 @@ builder.Services.AddScoped<IItemService, ItemService>();
 builder.Services.AddScoped<ITransactionRepository, TransactionRepository>();
 builder.Services.AddScoped<ITransactionService, TransactionService>();
 builder.Services.AddScoped<IAIApprovalService, AIApprovalService>();
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
 
 var app = builder.Build();
 

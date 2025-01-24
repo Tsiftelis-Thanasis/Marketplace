@@ -1,11 +1,11 @@
-﻿using MarketPlaceDTO;
+﻿using Marketplace.Models;
+using MarketPlaceDTO;
+using MarketPlaceServices.Interfaces;
 
 namespace MarketplaceServices.Interfaces
-{
-    public interface IItemService
+{   
+    public interface IItemService : IService<Item, ItemDto>
     {
-        Task<ItemDto> CreateItemAsync(ItemDto itemDto);
-
-        Task<ItemDto> GetItemByIdAsync(Guid itemId);
     }
+
 }

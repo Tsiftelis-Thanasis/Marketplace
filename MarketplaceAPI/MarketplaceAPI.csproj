@@ -27,7 +27,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\MarketPlaceDTO\MarketPlaceDTO.csproj" />
-    <ProjectReference Include="..\MarketPlaceModels\MarketPlaceModels.csproj" />
     <ProjectReference Include="..\MarketplaceRepository\MarketPlaceRepository.csproj" />
     <ProjectReference Include="..\MarketPlaceServices\MarketPlaceServices.csproj" />
   </ItemGroup>

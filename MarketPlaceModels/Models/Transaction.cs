@@ -12,7 +12,6 @@ namespace Marketplace.Models
         public decimal Amount { get; set; }
         public Status TransactionStatus { get; set; } = Status.Pending;
         public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
-
         public User? Buyer { get; set; }
         public User? Seller { get; set; }
         public Item? Item { get; set; }
