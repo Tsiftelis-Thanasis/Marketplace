@@ -1,0 +1,47 @@
+﻿@page "/login"
+@using System.ComponentModel.DataAnnotations
+@using MarketplaceUI
+@using Marketplace.Models
+@using Microsoft.AspNetCore.Components
+@inject ILoginService LoginService
+@inject NavigationManager NavigationManager
+
+<h3>Login</h3>
+
+<EditForm Model="@loginModel" OnValidSubmit="HandleLogin">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="form-group">
+        <label for="username">Username</label>
+        <InputText id="username" class="form-control" @bind-Value ="loginModel.Username" />
+        <ValidationMessage For="@(() => loginModel.Username)" />
+    </div>
+
+    <div class="form-group">
+        <label for="password">Password</label>
+        <InputPassword id="password" class="form-control" @bind="loginModel.Password" />
+        <ValidationMessage For="@(() => loginModel.Password)" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Login</button>
+</EditForm>
+
+@code {
+    private LoginModel loginModel = new LoginModel();
+
+    private async Task HandleLogin()
+    {
+        var result = await LoginService.LoginAsync(loginModel);
+        if (result)
+        {
+            // On successful login, redirect to dashboard or home
+            NavigationManager.NavigateTo("/dashboard");
+        }
+        else
+        {
+            // Handle login failure (show error message, etc.)
+            Console.WriteLine("Login failed.");
+        }
+    }    
+}

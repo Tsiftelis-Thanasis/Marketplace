@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using MarketplaceUI.Data;
 
 namespace MarketplaceUI
 {
@@ -28,7 +27,14 @@ namespace MarketplaceUI
         {
             services.AddRazorPages();
             services.AddServerSideBlazor();
-            services.AddSingleton<WeatherForecastService>();
+
+            // Register HttpClient with a base address
+            services.AddHttpClient<ILoginService, LoginService>(client =>
+            {
+                client.BaseAddress = new Uri("https://localhost:7024"); // Replace with your API's base URL
+            });
+
+            services.AddScoped<ILocalStorageService, LocalStorageService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
