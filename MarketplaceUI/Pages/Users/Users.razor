@@ -1,0 +1,83 @@
+﻿@page "/Users/users"
+@using Marketplace.Models
+@using MarketplaceUI.Interfaces
+@inject IUserService UserService
+@inject HttpClient Http
+@inject NavigationManager Navigation
+
+<h2>Users</h2>
+
+<!-- Add User Button -->
+<button class="btn btn-primary mb-3" @onclick="AddUser">Add User</button>
+
+<!-- Users Table -->
+<table class="table">
+    <thead>
+        <tr>
+            <th>Username</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var user in users)
+        {
+            <tr>
+                <td>@user.Username</td>
+                <td>@user.Email</td>
+                <td>@user.Role</td>
+                <td>
+                    <button class="btn btn-info" @onclick="() => EditUser(user.UserId)">Edit</button>
+                    <button class="btn btn-danger" @onclick="() => DeleteUser(user.UserId)">Delete</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+
+
+@code {
+    private List<User> users = new List<User>();
+
+    // Load users when the component is initialized
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadUsers();
+    }
+
+    // Load the list of users via UserService
+    private async Task LoadUsers()
+    {
+        users = await UserService.GetUsersAsync();  // Use UserService to fetch users
+    }
+
+    // Navigate to the "Add User" page
+    private void AddUser()
+    {
+        Navigation.NavigateTo("/users/add-user");
+    }
+
+    // Navigate to the "Edit User" page
+    private void EditUser(int userId)
+    {
+        Navigation.NavigateTo($"/users/edit-user/{userId}");
+    }
+
+    // Delete user via UserService
+    private async Task DeleteUser(int userId)
+    {
+        // var confirmed = await Task.Run(() =>
+        //     JS.InvokeAsync<bool>("confirm", "Are you sure you want to delete this user?")  // Use JS Interop to confirm deletion
+        // );
+
+        var confirmed = false;
+
+        if (confirmed)
+        {
+            await UserService.DeleteUserAsync(userId);  // Call DeleteUserAsync from UserService
+            await LoadUsers();  // Refresh users after deletion
+        }
+    }
+}

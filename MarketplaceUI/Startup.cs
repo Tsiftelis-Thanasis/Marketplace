@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using MarketplaceUI.Interfaces;
+using MarketplaceUI.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Hosting;
@@ -33,8 +35,8 @@ namespace MarketplaceUI
             {
                 client.BaseAddress = new Uri("https://localhost:7024"); // Replace with your API's base URL
             });
-
             services.AddScoped<ILocalStorageService, LocalStorageService>();
+            services.AddScoped<IUserService, UserService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

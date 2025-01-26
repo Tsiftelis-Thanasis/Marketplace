@@ -77,5 +77,43 @@ namespace MarketplaceAPI.Controllers
             }
             return Ok(user);
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllUsers()
+        {
+            var Users = await _userService.GetAllAsync();
+            return Ok(Users);
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> CreateUser(UserDto UserDto)
+        {
+            var createdUser = await _userService.CreateAsync(UserDto);
+            return CreatedAtAction(nameof(GetUserById), new { id = createdUser.Id }, createdUser);
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateUser(int id, UserDto UserDto)
+        {
+            var updatedUser = await _userService.UpdateAsync(id, UserDto);
+            if (!updatedUser)
+            {
+                return NotFound();
+            }
+            return Ok(updatedUser);
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteUser(int id)
+        {
+            var result = await _userService.DeleteAsync(id);
+            if (!result)
+            {
+                return NotFound();
+            }
+            return NoContent();
+        }
+
     }
 }

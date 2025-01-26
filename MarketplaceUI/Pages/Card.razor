@@ -1,0 +1,23 @@
+﻿@* Card.razor *@
+@code {
+    [Parameter]
+    public string Title { get; set; }
+
+    [Parameter]
+    public string Link { get; set; }
+
+    [Parameter]
+    public string Description { get; set; }
+
+    [Parameter]
+    public string Icon { get; set; }
+}
+
+<div class="dashboard-card">
+    <div class="card-header">
+        <i class="icon">@Icon</i>
+        <h3>@Title</h3>
+    </div>
+    <p>@Description</p>
+    <NavLink href="@Link" class="card-link">Go to @Title</NavLink>
+</div>

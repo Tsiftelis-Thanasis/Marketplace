@@ -1,7 +1,7 @@
 ﻿using Microsoft.JSInterop;
 using System.Threading.Tasks;
 
-namespace MarketplaceUI
+namespace MarketplaceUI.Services
 {
     public interface ILocalStorageService
     {

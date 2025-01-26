@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MarketPlaceRepository.Migrations
 {
     [DbContext(typeof(MarketplaceDbContext))]
-    [Migration("20250124135939_InitialCreate")]
+    [Migration("20250125221930_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />

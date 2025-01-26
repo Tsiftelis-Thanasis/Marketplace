@@ -5,11 +5,19 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\MarketPlaceModels\MarketPlaceModels.csproj" />
+    <Compile Remove="Data\**" />
+    <Content Remove="Data\**" />
+    <EmbeddedResource Remove="Data\**" />
+    <None Remove="Data\**" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Data\" />
+    <Content Remove="Pages\Users\AddUser.razor" />
+    <Content Remove="Pages\Users\EditUser.razor" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MarketPlaceModels\MarketPlaceModels.csproj" />
   </ItemGroup>
 
 </Project>

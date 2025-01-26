@@ -1,15 +1,12 @@
 ﻿using Marketplace.Models;
+using MarketplaceUI.Interfaces;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
 
-namespace MarketplaceUI
+namespace MarketplaceUI.Services
 {
-    public interface ILoginService
-    {
-        Task<bool> LoginAsync(LoginModel loginModel);
-    }
-
+  
     public class LoginService : ILoginService
     {
         private readonly HttpClient _httpClient;
@@ -23,7 +20,7 @@ namespace MarketplaceUI
 
         public async Task<bool> LoginAsync(LoginModel loginModel)
         {
-            var response = await _httpClient.PostAsJsonAsync("api/auth/login", loginModel);
+            var response = await _httpClient.PostAsJsonAsync("api/User/login", loginModel);
 
             if (response.IsSuccessStatusCode)
             {
@@ -36,6 +33,15 @@ namespace MarketplaceUI
                 return false;
             }
         }
+
+
+        public async Task<bool> RegisterAsync(RegisterModel registerModel) // New method
+        {
+            var response = await _httpClient.PostAsJsonAsync("api/User/register", registerModel);
+
+            return response.IsSuccessStatusCode;
+        }
+
     }
 
 }
