@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using MarketplaceAPI.Services.Interfaces;
 using MarketPlaceModels.Enums;
 using MarketPlaceDTO;
+using MarketPlaceModels.Models;
 
 namespace MarketplaceAPI.Controllers
 {
@@ -60,10 +61,16 @@ namespace MarketplaceAPI.Controllers
                 return Unauthorized("Invalid username or password.");
             }
 
-            // Generate JWT token
-            var token = _userService.GenerateUserJwtToken(user);
+            var userDto = new UserDto
+            {
+                Username = model.Username
+            };
 
-            return Ok(new { Token = token });
+            userDto.PasswordHash = _passwordHasher.HashPassword(userDto, model.Password);
+
+            var response = _userService.LoginUser(userDto);
+
+            return Ok(response);
         }
 
         [Authorize]

@@ -13,6 +13,7 @@ using MarketPlaceDTO;
 using AutoMapper;
 using MarketplaceRepository.Repositories;
 using MarketPlaceModels.Enums;
+using MarketPlaceModels.Models;
 
 namespace MarketplaceServices.Services
 {
@@ -45,6 +46,13 @@ namespace MarketplaceServices.Services
         public async Task<bool> UserExistsAsync(string username, string email)
         {
             return await _userRepository.UserExistsAsync(username, email);
+        }
+
+        public LoginResponse LoginUser(UserDto userDto) 
+        {
+            var token = GenerateUserJwtToken(userDto);
+            LoginResponse loginResponse = new LoginResponse { Token = token };
+            return loginResponse;
         }
 
         public string GenerateUserJwtToken(UserDto user)

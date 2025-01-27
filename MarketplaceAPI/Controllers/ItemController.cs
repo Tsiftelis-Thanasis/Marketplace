@@ -1,5 +1,6 @@
 ﻿using MarketPlaceDTO;
 using MarketplaceServices.Interfaces;
+using MarketplaceServices.Services;
 using Microsoft.AspNetCore.Mvc;
 
 [ApiController]
@@ -16,8 +17,13 @@ public class ItemController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetAllItems()
     {
-        var Items = await _itemsService.GetAllAsync();
-        return Ok(Items);
+        var items = await _itemsService.GetAllAsync();
+        if (items == null || !items.Any())
+        {
+            return NotFound();
+        }
+        return Ok(items);
+
     }
 
     [HttpGet("{id}")]
