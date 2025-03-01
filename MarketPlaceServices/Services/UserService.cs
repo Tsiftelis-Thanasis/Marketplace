@@ -1,81 +1,60 @@
-﻿using MarketplaceAPI.Services.Interfaces;
-using Microsoft.EntityFrameworkCore;
-using System.Security.Claims;
-using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
-using System.Text;
-using MarketplaceAPI;
+﻿using System.Net.Http;
+using System.Net.Http.Json;
+using System.Threading.Tasks;
+using System.Collections.Generic;
 using Marketplace.Models;
-using MarketplaceRepository.Interfaces;
-using Microsoft.Extensions.Configuration;
-using MarketPlaceServices.Services;
-using MarketPlaceDTO;
-using AutoMapper;
-using MarketplaceRepository.Repositories;
-using MarketPlaceModels.Enums;
+using MarketplaceServices.Interfaces;
+using MarketPlaceServices.Interfaces;
 
 namespace MarketplaceServices.Services
 {
-    public class UserService: Service<User, UserDto>, IUserService
+
+    public class UserService : IUserService
     {
-        private readonly IUserRepository _userRepository;
-        private readonly IConfiguration _configuration;
-        private readonly IMapper _mapper;
-        public UserService(IUserRepository userRepository, IConfiguration configuration, IMapper mapper) : base(userRepository, mapper)
-        {
-            _userRepository = userRepository;
-            _configuration = configuration;
-            _mapper = mapper;
-        }
-             
+        private readonly HttpClient _httpClient;
 
-        public async Task<UserDto?> GetUserByUsernameOrEmailAsync(string username, string email)
+        private readonly ICacheService _cacheService;
+
+        private readonly TimeSpan _cacheDuration = TimeSpan.FromMinutes(5);
+
+
+        public UserService(HttpClient httpClient, ICacheService cacheService)
         {
-            var user = await _userRepository.GetUserByUsernameOrEmailAsync(username, email);
-            return _mapper.Map<UserDto>(user); 
+            _httpClient = httpClient;
+            _cacheService = cacheService;
         }
 
-        public async Task<UserDto> RegisterUserAsync(UserDto userDto)
+        public async Task<List<User>> GetUsersAsync()
         {
-            var user = _mapper.Map<User>(userDto);
-            await _userRepository.AddAsync(user);
-            return _mapper.Map<UserDto>(user);
+
+            const string cacheKey = "GetAllUsers";
+            var cachedUsers = await _cacheService.GetAsync<List<User>>(cacheKey);
+            if (cachedUsers != null) return cachedUsers;
+
+            var users = await _httpClient.GetFromJsonAsync<List<User>>("api/user");
+            await _cacheService.SetAsync(cacheKey, users, _cacheDuration);
+            return users;
+
         }
 
-        public async Task<bool> UserExistsAsync(string username, string email)
+        public async Task AddUserAsync(User user)
         {
-            return await _userRepository.UserExistsAsync(username, email);
+            await _httpClient.PostAsJsonAsync("api/user", user);
+            await _cacheService.RemoveAsync("GetAllUsers");
+
         }
 
-        public string GenerateUserJwtToken(UserDto user)
+        public async Task EditUserAsync(int userId, User user)
         {
-            var jwtSettings = _configuration.GetSection("JwtSettings");
-            var secretKey = jwtSettings["SecretKey"];
-            var issuer = jwtSettings["Issuer"];
-            var audience = jwtSettings["Audience"];
-
-            var claims = new[]
-            {
-                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new Claim(ClaimTypes.Name, user.Username),
-                new Claim(ClaimTypes.Email, user.Email),
-                new Claim(ClaimTypes.Role, ((Roles)user.Role).ToString())
-            };
-
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
-            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
-            var token = new JwtSecurityToken(
-                issuer: issuer,
-                audience: audience,
-                claims: claims,
-                expires: DateTime.Now.AddDays(1),
-                signingCredentials: creds
-            );
-
-            return new JwtSecurityTokenHandler().WriteToken(token);
+            await _httpClient.PutAsJsonAsync($"api/user/{userId}", user);
+            await _cacheService.RemoveAsync("GetAllUsers");
         }
 
-
+        public async Task DeleteUserAsync(int userId)
+        {
+            await _httpClient.DeleteAsync($"api/user/{userId}");
+            await _cacheService.RemoveAsync("GetAllUsers");
+        }
     }
+
 }

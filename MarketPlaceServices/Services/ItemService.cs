@@ -5,6 +5,8 @@ using MarketPlaceDTO;
 using MarketPlaceServices.Services;
 using AutoMapper;
 using MarketPlaceRepository.Repositories;
+using MarketPlaceServices.Interfaces;
+using Microsoft.Extensions.Caching.Distributed;
 
 namespace MarketplaceServices.Services
 {
@@ -12,11 +14,12 @@ namespace MarketplaceServices.Services
     {
         private readonly IItemRepository _itemRepository;
         private readonly IMapper _mapper;
-
-        public ItemService(IItemRepository itemRepository, IMapper mapper)  : base(itemRepository, mapper)
+        private readonly IDistributedCache _cache;
+        public ItemService(IItemRepository itemRepository, IMapper mapper, IDistributedCache cache)  : base(itemRepository, mapper, cache)
         {
             _itemRepository = itemRepository;
             _mapper = mapper;
+            _cache = cache;
         }
     }
 }

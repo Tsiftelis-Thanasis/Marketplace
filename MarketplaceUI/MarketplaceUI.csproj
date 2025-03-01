@@ -18,6 +18,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\MarketPlaceModels\MarketPlaceModels.csproj" />
+    <ProjectReference Include="..\MarketPlaceServices\MarketPlaceServices.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,5 +1,3 @@
-using MarketplaceAPI.Services;
-using MarketplaceAPI.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
@@ -84,7 +82,7 @@ builder.Services.AddScoped(typeof(IService<,>), typeof(Service<,>));
 builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 builder.Services.AddScoped<IPasswordHasher<UserDto>, PasswordHasher<UserDto>>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
-builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IUserDtoService, UserDtoService>();
 builder.Services.AddScoped<IPostRepository, PostRepository>();
 builder.Services.AddScoped<IPostService, PostService>();
 builder.Services.AddScoped<IItemRepository, ItemRepository>();
@@ -92,7 +90,18 @@ builder.Services.AddScoped<IItemService, ItemService>();
 builder.Services.AddScoped<ITransactionRepository, TransactionRepository>();
 builder.Services.AddScoped<ITransactionService, TransactionService>();
 builder.Services.AddScoped<IAIApprovalService, AIApprovalService>();
+//builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<ICacheService, RedisCacheService>();
+
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
+
+builder.Services.AddStackExchangeRedisCache(options =>
+{
+    options.Configuration = builder.Configuration.GetConnectionString("Redis");
+    options.InstanceName = "MarketplaceCache_";
+});
+
 
 
 var app = builder.Build();

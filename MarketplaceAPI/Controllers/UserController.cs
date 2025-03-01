@@ -2,9 +2,9 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
-using MarketplaceAPI.Services.Interfaces;
 using MarketPlaceModels.Enums;
 using MarketPlaceDTO;
+using MarketplaceServices.Interfaces;
 
 namespace MarketplaceAPI.Controllers
 {
@@ -12,10 +12,10 @@ namespace MarketplaceAPI.Controllers
     [Route("api/[controller]")]
     public class UserController : ControllerBase
     {
-        private readonly IUserService _userService;
+        private readonly IUserDtoService _userService;
         private readonly IPasswordHasher<UserDto> _passwordHasher;
 
-        public UserController(IUserService userService, IPasswordHasher<UserDto> passwordHasher)
+        public UserController(IUserDtoService userService, IPasswordHasher<UserDto> passwordHasher)
         {
             _userService = userService;
             _passwordHasher = passwordHasher;

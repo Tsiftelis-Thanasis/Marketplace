@@ -2,10 +2,10 @@
 using Moq;
 using MarketplaceAPI.Controllers;
 using Marketplace.Models;
-using MarketplaceAPI.Services.Interfaces;
 using Xunit;
 using Microsoft.AspNetCore.Identity;
 using MarketPlaceDTO;
+using MarketplaceServices.Interfaces;
 
 public class UserControllerTests
 {
@@ -13,7 +13,7 @@ public class UserControllerTests
     public async Task Register_ReturnsCreatedAtAction_WhenUserIsValid()
     {
         // Arrange
-        var mockUserService = new Mock<IUserService>();
+        var mockUserService = new Mock<IUserDtoService>();
         var mockHashPassword = new Mock<IPasswordHasher<UserDto>>();
         var newUser = new UserDto { Username = "testuser", Email = "test@example.com" };
         var newRegisterUser = new RegisterModel { Username = "testuser", Email = "test@example.com", Password = "123456" };

@@ -2,6 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using MarketplaceServices.Interfaces;
+using MarketplaceServices.Services;
+using MarketPlaceServices.Interfaces;
+using MarketPlaceServices.Services;
 using MarketplaceUI.Interfaces;
 using MarketplaceUI.Services;
 using Microsoft.AspNetCore.Builder;
@@ -23,20 +27,53 @@ namespace MarketplaceUI
 
         public IConfiguration Configuration { get; }
 
+
+
         // This method gets called by the runtime. Use this method to add services to the container.
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
+            var apiBaseUrl = Configuration["ApiSettings:BaseUrl"];
+            // var redisConnectionString = Configuration["RedisSettings:ConnectionString"];
+
+           
+
+
             services.AddRazorPages();
             services.AddServerSideBlazor();
 
-            // Register HttpClient with a base address
-            services.AddHttpClient<ILoginService, LoginService>(client =>
-            {
-                client.BaseAddress = new Uri("https://localhost:7024"); // Replace with your API's base URL
-            });
             services.AddScoped<ILocalStorageService, LocalStorageService>();
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<ICacheService, RedisCacheService>();
+
+            //services.AddStackExchangeRedisCache(options =>
+            //{
+            //    options.Configuration = redisConnectionString;
+            //    options.InstanceName = "MarketplaceCache_";
+            //});
+
+
+            services.AddHttpClient<IUserService, UserService>(client =>
+            {
+                client.BaseAddress = new Uri(apiBaseUrl);
+            });
+
+            services.AddHttpClient<IPostService, PostService>(client =>
+            {
+                client.BaseAddress = new Uri(apiBaseUrl);
+            });
+
+            services.AddHttpClient<IItemService, ItemService>(client =>
+            {
+                client.BaseAddress = new Uri(apiBaseUrl);
+                });
+
+            services.AddHttpClient<ITransactionService, TransactionService>(client =>
+            {
+                client.BaseAddress = new Uri(apiBaseUrl);
+            });
+            
+            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

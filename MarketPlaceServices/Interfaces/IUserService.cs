@@ -1,14 +1,15 @@
 ﻿using Marketplace.Models;
-using MarketPlaceDTO;
-using MarketPlaceServices.Interfaces;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
-namespace MarketplaceAPI.Services.Interfaces
+namespace MarketplaceServices.Interfaces
 {
-    public interface IUserService : IService<User, UserDto>
+    public interface IUserService
     {
-        Task<UserDto?> GetUserByUsernameOrEmailAsync(string username, string email);
-        Task<UserDto> RegisterUserAsync(UserDto user);
-        Task<bool> UserExistsAsync(string username, string email);
-        string GenerateUserJwtToken(UserDto user);
+        Task<List<User>> GetUsersAsync();
+        Task AddUserAsync(User user);
+        Task EditUserAsync(int userId, User user);
+        Task DeleteUserAsync(int userId);
     }
+
 }
