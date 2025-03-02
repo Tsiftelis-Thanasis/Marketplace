@@ -13,6 +13,7 @@ using MarketplaceRepository.Repositories;
 using MarketPlaceModels.Enums;
 using MarketplaceServices.Interfaces;
 using Microsoft.Extensions.Caching.Distributed;
+using MarketPlaceModels.Models;
 
 namespace MarketplaceServices.Services
 {
@@ -30,7 +31,20 @@ namespace MarketplaceServices.Services
             _mapper = mapper;
             _cache = cache;
         }
-             
+
+        public async Task<LoginResponse> LoginUserAsync(UserDto userDto)
+        {
+            var user = await _userRepository.GetUserByUsernameOrEmailAsync(userDto.Username, userDto.Email);
+
+            if (user == null)
+                return null; // User not found
+
+            // Generate JWT token
+            var token = GenerateUserJwtToken(_mapper.Map<UserDto>(user));
+
+            return new LoginResponse { Token = token };
+        }
+
         public async Task<UserDto?> GetUserByUsernameOrEmailAsync(string username, string email)
         {
             var user = await _userRepository.GetUserByUsernameOrEmailAsync(username, email);

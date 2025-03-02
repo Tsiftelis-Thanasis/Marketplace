@@ -1,25 +1,24 @@
 ﻿using Marketplace.Models;
 using MarketplaceAPI.Controllers;
-using MarketplaceAPI.Services.Interfaces;
 using MarketPlaceDTO;
 using MarketPlaceModels.Models;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Xunit;
 using FluentAssertions;
+using MarketplaceServices.Interfaces;
 
 namespace MarketPlaceTests
 {
     public class UserControllerTests
     {
-        private readonly Mock<IUserService> _mockService;
+        private readonly Mock<IUserDtoService> _mockService;
         private readonly UserController _controller;
 
         public UserControllerTests()
         {
-            _mockService = new Mock<IUserService>();
+            _mockService = new Mock<IUserDtoService>();
             var mockHashPassword = new Mock<IPasswordHasher<UserDto>>();
             _controller = new UserController(_mockService.Object, mockHashPassword.Object);
         }
@@ -48,7 +47,8 @@ namespace MarketPlaceTests
             // Arrange
             var loginRequest = new LoginModel { Username = "user1", Password = "password123" };
             var loginResponse = new LoginResponse { Token = "mockToken" };
-            _mockService.Setup(s => s.LoginUser(It.IsAny<UserDto>())).Returns(loginResponse);
+            
+            _mockService.Setup(s => s.LoginUserAsync(It.IsAny<UserDto>())).ReturnsAsync(loginResponse);
 
             // Act
             var result = await _controller.Login(loginRequest);

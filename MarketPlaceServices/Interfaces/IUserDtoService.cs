@@ -1,5 +1,6 @@
 ﻿using Marketplace.Models;
 using MarketPlaceDTO;
+using MarketPlaceModels.Models;
 using MarketPlaceServices.Interfaces;
 
 namespace MarketplaceServices.Interfaces
@@ -10,5 +11,7 @@ namespace MarketplaceServices.Interfaces
         Task<UserDto> RegisterUserAsync(UserDto user);
         Task<bool> UserExistsAsync(string username, string email);
         string GenerateUserJwtToken(UserDto user);
+        Task<LoginResponse> LoginUserAsync(UserDto userDto);
+
     }
 }
