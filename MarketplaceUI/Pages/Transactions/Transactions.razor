@@ -1,0 +1,52 @@
+﻿@page "/Transactions/transactions"
+@using Marketplace.Models
+@using MarketplaceUI.Interfaces
+@inject ITransactionService TranscationService
+@inject NavigationManager Navigation
+
+<h3>Transcations</h3>
+
+@if (transactions == null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <ul>
+        @foreach (var tr in transactions)
+        {
+            <li>@tr.Buyer - @tr.Amount</li>
+        }
+    </ul>
+}
+
+@code {
+    private List<Transaction> transactions;
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        await LoadTransactions();
+}
+    private async Task LoadTransactions()
+    {
+        transactions = await TranscationService.GetTransactionsAsync();
+    }
+
+    private void EditTransaction(int transcationid)
+    {
+        Navigation.NavigateTo($"/transactions/edit-transaction/{transcationid}");
+    }
+
+    private async Task DeleteTransaction(int transcationid)
+    {
+        var confirmed = false;
+
+        if (confirmed)
+        {
+            await TranscationService.DeleteTransactionAsync(transcationid);  
+            await LoadTransactions();  
+        }
+    }
+
+}

@@ -1,0 +1,30 @@
+﻿@page "/Items/Items"
+@using Marketplace.Models
+@using MarketplaceUI.Interfaces
+
+<h3>Items</h3>
+@* 
+@if (Items == null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <ul>
+        @foreach (var Item in Items)
+        {
+            <li>@Item.Title - @Item.Description</li>
+        }
+    </ul>
+}
+ *@
+@code {
+    // private List<Item>      Items;
+
+    // protected override async Task OnInitializedAsync()
+    // {
+    //     Items = await ItemService.GetItemsAsync();
+    // }
+}
+
+

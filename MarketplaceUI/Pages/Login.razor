@@ -3,9 +3,11 @@
 @using MarketplaceUI
 @using Marketplace.Models
 @using MarketplaceUI.Interfaces
+@using MarketplaceUI.Services
 @using Microsoft.AspNetCore.Components
 @inject ILoginService LoginService
 @inject NavigationManager NavigationManager
+@inject CustomAuthStateProvider AuthStateProvider
 
 <h3>Login</h3>
 
@@ -33,10 +35,10 @@
 
     private async Task HandleLogin()
     {
-        var result = await LoginService.LoginAsync(loginModel);
-        if (result)
+        var token = await LoginService.LoginAsync(loginModel);
+        if (!string.IsNullOrEmpty(token))
         {
-            // On successful login, redirect to dashboard or home
+            await AuthStateProvider.Login(token);
             NavigationManager.NavigateTo("/dashboard");
         }
         else
@@ -44,5 +46,5 @@
             // Handle login failure (show error message, etc.)
             Console.WriteLine("Login failed.");
         }
-    }    
+    }   
 }

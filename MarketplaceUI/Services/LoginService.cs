@@ -1,4 +1,5 @@
 ﻿using Marketplace.Models;
+using MarketPlaceModels.Models;
 using MarketplaceUI.Interfaces;
 using System.Net.Http;
 using System.Net.Http.Json;
@@ -9,38 +10,54 @@ namespace MarketplaceUI.Services
   
     public class LoginService : ILoginService
     {
-        private readonly HttpClient _httpClient;
-        private readonly ILocalStorageService _localStorageService;
 
-        public LoginService(HttpClient httpClient, ILocalStorageService localStorageService)
+
+        private readonly HttpClient _httpClient;
+        private readonly CustomAuthStateProvider _authStateProvider;
+
+
+        public LoginService(HttpClient httpClient, CustomAuthStateProvider authStateProvider)
         {
             _httpClient = httpClient;
-            _localStorageService = localStorageService;
+            _authStateProvider = authStateProvider;
         }
 
-        public async Task<bool> LoginAsync(LoginModel loginModel)
+
+        public async Task<string?> LoginAsync(LoginModel loginModel)
         {
-            var response = await _httpClient.PostAsJsonAsync("api/User/login", loginModel);
+            var response = await _httpClient.PostAsJsonAsync("api/user/login", loginModel);
 
-            if (response.IsSuccessStatusCode)
+            if (!response.IsSuccessStatusCode)
             {
-                var token = await response.Content.ReadAsStringAsync();
-                await _localStorageService.SetItemAsync("authToken", token);
-                return true;
+                return null;
             }
-            else
+
+            var result = await response.Content.ReadFromJsonAsync<LoginResponse>();
+
+            if (result is null || string.IsNullOrEmpty(result.Token))
             {
-                return false;
+                return null;
             }
+
+            await _authStateProvider.MarkUserAsAuthenticated(result.Token);
+            return result.Token;
         }
 
 
-        public async Task<bool> RegisterAsync(RegisterModel registerModel) // New method
+        public async Task<bool> RegisterAsync(RegisterModel registerModel)
         {
             var response = await _httpClient.PostAsJsonAsync("api/User/register", registerModel);
 
-            return response.IsSuccessStatusCode;
+            if (response.IsSuccessStatusCode)
+            {
+                return true;
+            }
+
+            //var error = await response.Content.ReadAsStringAsync();
+            return false;
         }
+
+
 
     }
 

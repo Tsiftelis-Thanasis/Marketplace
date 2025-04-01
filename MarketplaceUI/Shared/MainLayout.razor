@@ -1,4 +1,8 @@
-﻿@inherits LayoutComponentBase
+﻿@using MarketplaceUI.Services
+@inherits LayoutComponentBase
+@using Microsoft.AspNetCore.Components.Authorization
+@inject CustomAuthStateProvider AuthStateProvider
+@inject NavigationManager Navigation
 
 <div class="app-container">
     <!-- Sidebar -->
@@ -10,9 +14,16 @@
     <main class="main-content">
         <header class="top-bar">
             <nav>
-                <NavLink class="nav-link" href="/login" Match="NavLinkMatch.All">Login</NavLink>
-                <NavLink class="nav-link" href="/register" Match="NavLinkMatch.All">Register</NavLink>  
-
+                @if (isAuthenticated)
+                {
+                    <span class="nav-text">Welcome, @userName!</span>
+                    <button class="btn btn-danger" @onclick="HandleLogout">Logout</button>
+                }
+                else
+                {
+                    <NavLink class="nav-link" href="/login" Match="NavLinkMatch.All">Login</NavLink>
+                    <NavLink class="nav-link" href="/register" Match="NavLinkMatch.All">Register</NavLink>
+                }
             </nav>
         </header>
 
@@ -21,3 +32,38 @@
         </section>
     </main>
 </div>
+
+@code {
+    private bool isAuthenticated;
+    private string userName = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await UpdateAuthenticationState();
+        AuthStateProvider.AuthenticationStateChanged += OnAuthStateChanged;
+    }
+
+    private async void OnAuthStateChanged(Task<AuthenticationState> task)
+    {
+        await UpdateAuthenticationState();
+        StateHasChanged(); // Refresh UI when authentication changes
+    }
+
+    private async Task UpdateAuthenticationState()
+    {
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        isAuthenticated = authState.User.Identity?.IsAuthenticated ?? false;
+        userName = isAuthenticated ? authState.User.Identity?.Name ?? "User" : string.Empty;
+    }
+
+    private async Task HandleLogout()
+    {
+        await AuthStateProvider.Logout();
+        Navigation.NavigateTo("/login", true);
+    }
+
+    public void Dispose()
+    {
+        AuthStateProvider.AuthenticationStateChanged -= OnAuthStateChanged;
+    }
+}

@@ -1,17 +1,9 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using MarketplaceServices.Interfaces;
-using MarketplaceServices.Services;
-using MarketPlaceServices.Interfaces;
-using MarketPlaceServices.Services;
 using MarketplaceUI.Interfaces;
 using MarketplaceUI.Services;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -34,23 +26,20 @@ namespace MarketplaceUI
         public void ConfigureServices(IServiceCollection services)
         {
             var apiBaseUrl = Configuration["ApiSettings:BaseUrl"];
-            // var redisConnectionString = Configuration["RedisSettings:ConnectionString"];
-
-           
-
-
+            
             services.AddRazorPages();
             services.AddServerSideBlazor();
 
+            services.AddScoped<CustomAuthStateProvider>();
+            services.AddScoped<AuthenticationStateProvider>(provider => provider.GetRequiredService<CustomAuthStateProvider>());
+
+
+            services.AddScoped<ILoginService, LoginService>();
             services.AddScoped<ILocalStorageService, LocalStorageService>();
             services.AddScoped<IUserService, UserService>();
-            services.AddScoped<ICacheService, RedisCacheService>();
-
-            //services.AddStackExchangeRedisCache(options =>
-            //{
-            //    options.Configuration = redisConnectionString;
-            //    options.InstanceName = "MarketplaceCache_";
-            //});
+            services.AddScoped<IPostService, PostService>();
+            //services.AddScoped<IItemService, ItemService>();
+            services.AddScoped<ITransactionService, TransactionService>();
 
 
             services.AddHttpClient<IUserService, UserService>(client =>
@@ -63,20 +52,27 @@ namespace MarketplaceUI
                 client.BaseAddress = new Uri(apiBaseUrl);
             });
 
-            services.AddHttpClient<IItemService, ItemService>(client =>
-            {
-                client.BaseAddress = new Uri(apiBaseUrl);
-                });
+            //services.AddHttpClient<IItemService, ItemService>(client =>
+            //{
+            //    client.BaseAddress = new Uri(apiBaseUrl);
+            //});
 
             services.AddHttpClient<ITransactionService, TransactionService>(client =>
             {
                 client.BaseAddress = new Uri(apiBaseUrl);
             });
-            
-            
+
+            services.AddHttpClient<ILoginService, LoginService>(client =>
+            {
+                client.BaseAddress = new Uri(apiBaseUrl);
+            });
+
+
+            services.AddAuthorizationCore();
+           
+
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())

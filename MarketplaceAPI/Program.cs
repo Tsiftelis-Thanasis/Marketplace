@@ -88,7 +88,7 @@ builder.Services.AddScoped<IPostService, PostService>();
 builder.Services.AddScoped<IItemRepository, ItemRepository>();
 builder.Services.AddScoped<IItemService, ItemService>();
 builder.Services.AddScoped<ITransactionRepository, TransactionRepository>();
-builder.Services.AddScoped<ITransactionService, TransactionService>();
+builder.Services.AddScoped<ITransactionDtoService, TransactionDtoService>();
 builder.Services.AddScoped<IAIApprovalService, AIApprovalService>();
 //builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ICacheService, RedisCacheService>();

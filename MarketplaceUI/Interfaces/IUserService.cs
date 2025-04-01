@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace MarketplaceServices.Interfaces
+namespace MarketplaceUI.Interfaces
 {
     public interface IUserService
     {
