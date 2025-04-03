@@ -1,5 +1,4 @@
 ﻿using MarketPlaceModels.Enums;
-using System;
 
 namespace Marketplace.Models
 {

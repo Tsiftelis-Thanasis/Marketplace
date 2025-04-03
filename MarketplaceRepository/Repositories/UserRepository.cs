@@ -10,7 +10,7 @@ namespace MarketplaceRepository.Repositories
     {
         private readonly MarketplaceDbContext _context;
 
-        public UserRepository(MarketplaceDbContext context): base(context) 
+        public UserRepository(MarketplaceDbContext context) : base(context)
         {
             _context = context;
         }

@@ -2,12 +2,24 @@
 @using Marketplace.Models
 @using MarketplaceUI.Interfaces
 @inject IPostService PostService
+@inject NavigationManager Navigation
+@inject AuthenticationStateProvider AuthenticationStateProvider
 
 <h3>Posts</h3>
+
+
+@if (isAuthenticated)
+{
+    <button class="btn btn-success mb-3" @onclick="NavigateToCreatePost">➕ Create Post</button>
+}
 
 @if (posts == null)
 {
     <p>Loading...</p>
+}
+else if (!posts.Any())
+{
+    <p>No posts available.</p>
 }
 else
 {
@@ -20,10 +32,21 @@ else
 }
 
 @code {
-    private List<Post> posts;
+   
+    private List<Post> posts = new();
+    private bool isAuthenticated;
 
     protected override async Task OnInitializedAsync()
     {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        isAuthenticated = authState.User.Identity?.IsAuthenticated ?? false;
+
         posts = await PostService.GetPostsAsync();
     }
+
+    private void NavigateToCreatePost()
+    {
+        Navigation.NavigateTo("/create-post");
+    }
+
 }

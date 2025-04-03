@@ -1,0 +1,94 @@
+﻿@page "/create-post"
+@using MarketPlaceModels.Enums
+@using Marketplace.Models
+@using MarketplaceUI.Interfaces
+@inject IPostService PostService
+@inject NavigationManager Navigation
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
+@* Import Blazored.TextEditor *@
+@using Blazored.TextEditor
+
+<h3>Create a New Post</h3>
+
+@if (!isAuthenticated)
+{
+    <p>You must be logged in to create a post.</p>
+}
+else
+{
+    <EditForm Model="newPost" OnValidSubmit="HandleSubmit">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <div class="mb-3">
+            <label>Title:</label>
+            <InputText class="form-control" @bind-Value="newPost.Title" />
+            <ValidationMessage For="@(() => newPost.Title)" />
+        </div>
+
+        <div class="mb-3">
+            <label>Description:</label>
+            <BlazoredTextEditor @ref="textEditor" />
+            <ValidationMessage For="@(() => newPost.Description)" />
+        </div>
+
+        <div class="mb-3">
+            <label>Upload Image:</label>
+            <InputFile OnChange="HandleFileUpload" />
+        </div>
+
+        <button class="btn btn-primary" type="submit">Submit</button>
+    </EditForm>
+}
+
+@code {
+    private bool isAuthenticated;
+    private Post newPost = new();
+    private BlazoredTextEditor textEditor;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        isAuthenticated = user.Identity?.IsAuthenticated ?? false;
+
+        if (!isAuthenticated)
+        {
+            Navigation.NavigateTo("/login");
+        }
+        else
+        {
+            int.TryParse(user.FindFirst("sub")?.Value, out int userId);
+            newPost.UserId = userId;
+        }
+    }
+
+    private async Task HandleSubmit()
+    {
+        newPost.Description = await textEditor.GetHTML(); // Get formatted text from the editor
+        newPost.CreatedDate = DateTime.UtcNow;
+        newPost.PostStatus = Status.Pending;
+
+        var createdPost = await PostService.CreatePostAsync(newPost);
+        if (createdPost != null)
+        {
+            Navigation.NavigateTo("/posts");
+        }
+        else
+        {
+            Console.WriteLine("Failed to create post.");
+        }
+    }
+
+    private async Task HandleFileUpload(InputFileChangeEventArgs e)
+    {
+        var file = e.File;
+        var buffer = new byte[file.Size];
+        await file.OpenReadStream().ReadAsync(buffer);
+
+        // Simulate an image upload to a server
+        newPost.ImageUrl = $"https://your-storage.com/uploads/{file.Name}";
+    }
+}

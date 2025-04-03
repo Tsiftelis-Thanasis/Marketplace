@@ -5,6 +5,5 @@ namespace MarketplaceRepository.Interfaces
 {
     public interface IItemRepository : IRepository<Item>
     {
-       
     }
 }

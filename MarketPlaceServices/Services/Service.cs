@@ -3,11 +3,6 @@ using MarketPlaceRepository.Interfaces;
 using MarketPlaceServices.Interfaces;
 using Microsoft.Extensions.Caching.Distributed;
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MarketPlaceServices.Services
 {
@@ -27,7 +22,7 @@ namespace MarketPlaceServices.Services
             _cache = cache;
         }
 
-        public async Task<TDto> CreateAsync(TDto dto)
+        public virtual async Task<TDto> CreateAsync(TDto dto)
         {
             var entity = _mapper.Map<TEntity>(dto);
             await _repository.AddAsync(entity);
@@ -37,7 +32,6 @@ namespace MarketPlaceServices.Services
             return _mapper.Map<TDto>(entity);
         }
 
-        
         private async Task<T> GetFromCacheOrSource<T>(string cacheKey, Func<Task<T>> sourceFunc)
         {
             var cachedData = await _cache.GetStringAsync(cacheKey);
@@ -58,7 +52,6 @@ namespace MarketPlaceServices.Services
 
             return result;
         }
-
 
         public async Task<TDto> GetByIdAsync(int id)
         {

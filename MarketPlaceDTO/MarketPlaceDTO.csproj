@@ -6,4 +6,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\MarketPlaceModels\MarketPlaceModels.csproj" />
+  </ItemGroup>
+
 </Project>

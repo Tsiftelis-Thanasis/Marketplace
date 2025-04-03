@@ -1,29 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Xunit;
-using Moq;
-using FluentAssertions;
-using System.Threading.Tasks;
-using Marketplace.Models;
+﻿using FluentAssertions;
+using MarketPlaceDTO;
 using MarketplaceServices.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using MarketPlaceDTO;
+using Moq;
 
 namespace MarketPlaceTests
 {
-    
-
     public class ItemControllerTests
     {
-        private readonly Mock<IItemService> _mockService;
+        private readonly Mock<IItemDtoService> _mockService;
         private readonly ItemController _controller;
 
         public ItemControllerTests()
         {
-            _mockService = new Mock<IItemService>();
+            _mockService = new Mock<IItemDtoService>();
             _controller = new ItemController(_mockService.Object);
         }
 
@@ -49,5 +39,4 @@ namespace MarketPlaceTests
             okResult.Value.Should().BeEquivalentTo(mockItems); // Compare collections
         }
     }
-
 }

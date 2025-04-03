@@ -1,12 +1,13 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Design;
-using Marketplace.Models;
+﻿using Marketplace.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace MarketplaceRepository.Data
 {
     public class MarketplaceDbContext : DbContext
     {
-        public MarketplaceDbContext(DbContextOptions<MarketplaceDbContext> options) : base(options) { }
+        public MarketplaceDbContext(DbContextOptions<MarketplaceDbContext> options) : base(options)
+        {
+        }
 
         public DbSet<User> Users { get; set; }
         public DbSet<Item> Items { get; set; }

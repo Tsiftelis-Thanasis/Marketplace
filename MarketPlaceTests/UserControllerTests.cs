@@ -1,13 +1,12 @@
-﻿using Marketplace.Models;
+﻿using FluentAssertions;
+using Marketplace.Models;
 using MarketplaceAPI.Controllers;
 using MarketPlaceDTO;
 using MarketPlaceModels.Models;
+using MarketplaceServices.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
-using Xunit;
-using FluentAssertions;
-using MarketplaceServices.Interfaces;
 
 namespace MarketPlaceTests
 {
@@ -47,7 +46,7 @@ namespace MarketPlaceTests
             // Arrange
             var loginRequest = new LoginModel { Username = "user1", Password = "password123" };
             var loginResponse = new LoginResponse { Token = "mockToken" };
-            
+
             _mockService.Setup(s => s.LoginUserAsync(It.IsAny<UserDto>())).ReturnsAsync(loginResponse);
 
             // Act

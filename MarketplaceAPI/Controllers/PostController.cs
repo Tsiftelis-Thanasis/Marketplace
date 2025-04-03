@@ -6,24 +6,24 @@ using Microsoft.AspNetCore.Mvc;
 [Route("api/[controller]")]
 public class PostController : ControllerBase
 {
-    private readonly IPostService _postService;
+    private readonly IPostDtoService _postDtoService;
 
-    public PostController(IPostService postService)
+    public PostController(IPostDtoService postDtoService)
     {
-        _postService = postService;
+        _postDtoService = postDtoService;
     }
 
     [HttpGet]
     public async Task<IActionResult> GetAllPosts()
     {
-        var posts = await _postService.GetAllAsync();
+        var posts = await _postDtoService.GetAllAsync();
         return Ok(posts);
     }
 
     [HttpGet("{id}")]
     public async Task<IActionResult> GetPostById(int id)
     {
-        var post = await _postService.GetByIdAsync(id);
+        var post = await _postDtoService.GetByIdAsync(id);
         if (post == null)
         {
             return NotFound();
@@ -34,14 +34,21 @@ public class PostController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> CreatePost(PostDto postDto)
     {
-        var createdPost = await _postService.CreateAsync(postDto);
-        return CreatedAtAction(nameof(GetPostById), new { id = createdPost.Id }, createdPost);
+        if (postDto == null)
+            return BadRequest("Invalid post data");
+
+        var createdPost = await _postDtoService.CreateAsync(postDto);
+
+        if (createdPost == null)
+            return StatusCode(500, "Error creating post");
+
+        return Ok(createdPost);
     }
 
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdatePost(int id, PostDto postDto)
     {
-        var updatedPost = await _postService.UpdateAsync(id, postDto);
+        var updatedPost = await _postDtoService.UpdateAsync(id, postDto);
         if (!updatedPost)
         {
             return NotFound();
@@ -52,11 +59,28 @@ public class PostController : ControllerBase
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeletePost(int id)
     {
-        var result = await _postService.DeleteAsync(id);
+        var result = await _postDtoService.DeleteAsync(id);
         if (!result)
         {
             return NotFound();
         }
         return NoContent();
+    }
+
+    [HttpPost("upload")]
+    public async Task<IActionResult> UploadImage(IFormFile file)
+    {
+        if (file == null || file.Length == 0)
+        {
+            return BadRequest("No file uploaded.");
+        }
+
+        var filePath = Path.Combine("wwwroot/uploads", file.FileName);
+        using (var stream = new FileStream(filePath, FileMode.Create))
+        {
+            await file.CopyToAsync(stream);
+        }
+
+        return Ok($"/uploads/{file.FileName}");
     }
 }

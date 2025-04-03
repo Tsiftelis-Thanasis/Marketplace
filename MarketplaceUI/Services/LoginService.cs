@@ -7,21 +7,16 @@ using System.Threading.Tasks;
 
 namespace MarketplaceUI.Services
 {
-  
     public class LoginService : ILoginService
     {
-
-
         private readonly HttpClient _httpClient;
         private readonly CustomAuthStateProvider _authStateProvider;
-
 
         public LoginService(HttpClient httpClient, CustomAuthStateProvider authStateProvider)
         {
             _httpClient = httpClient;
             _authStateProvider = authStateProvider;
         }
-
 
         public async Task<string?> LoginAsync(LoginModel loginModel)
         {
@@ -43,7 +38,6 @@ namespace MarketplaceUI.Services
             return result.Token;
         }
 
-
         public async Task<bool> RegisterAsync(RegisterModel registerModel)
         {
             var response = await _httpClient.PostAsJsonAsync("api/User/register", registerModel);
@@ -56,9 +50,5 @@ namespace MarketplaceUI.Services
             //var error = await response.Content.ReadAsStringAsync();
             return false;
         }
-
-
-
     }
-
 }

@@ -1,4 +1,3 @@
-using System;
 using MarketplaceUI.Interfaces;
 using MarketplaceUI.Services;
 using Microsoft.AspNetCore.Builder;
@@ -7,6 +6,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using System;
 
 namespace MarketplaceUI
 {
@@ -19,20 +19,17 @@ namespace MarketplaceUI
 
         public IConfiguration Configuration { get; }
 
-
-
         // This method gets called by the runtime. Use this method to add services to the container.
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
             var apiBaseUrl = Configuration["ApiSettings:BaseUrl"];
-            
+
             services.AddRazorPages();
             services.AddServerSideBlazor();
 
             services.AddScoped<CustomAuthStateProvider>();
             services.AddScoped<AuthenticationStateProvider>(provider => provider.GetRequiredService<CustomAuthStateProvider>());
-
 
             services.AddScoped<ILoginService, LoginService>();
             services.AddScoped<ILocalStorageService, LocalStorageService>();
@@ -40,7 +37,6 @@ namespace MarketplaceUI
             services.AddScoped<IPostService, PostService>();
             //services.AddScoped<IItemService, ItemService>();
             services.AddScoped<ITransactionService, TransactionService>();
-
 
             services.AddHttpClient<IUserService, UserService>(client =>
             {
@@ -67,10 +63,7 @@ namespace MarketplaceUI
                 client.BaseAddress = new Uri(apiBaseUrl);
             });
 
-
             services.AddAuthorizationCore();
-           
-
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

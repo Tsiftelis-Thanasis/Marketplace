@@ -17,6 +17,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Blazored.TextEditor" Version="1.1.2" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\MarketPlaceModels\MarketPlaceModels.csproj" />
     <ProjectReference Include="..\MarketPlaceServices\MarketPlaceServices.csproj" />
   </ItemGroup>

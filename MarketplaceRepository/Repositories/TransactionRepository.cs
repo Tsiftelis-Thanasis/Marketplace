@@ -2,7 +2,6 @@
 using MarketplaceRepository.Data;
 using MarketplaceRepository.Interfaces;
 using MarketPlaceRepository.Repositories;
-using Microsoft.EntityFrameworkCore;
 
 namespace MarketplaceRepository.Repositories
 {
@@ -14,7 +13,5 @@ namespace MarketplaceRepository.Repositories
         {
             _context = context;
         }
-        
     }
-
 }

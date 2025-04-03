@@ -1,21 +1,23 @@
 ﻿using Marketplace.Models;
+using MarketPlaceDTO;
+using MarketplaceServices.Interfaces;
 using MarketplaceUI.Interfaces;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
-using System.Text;
 using System.Threading.Tasks;
 
-public class PostService: IPostService
+public class PostService : IPostService
 {
+    private readonly IAIApprovalService _aiApprovalService;
 
     private readonly HttpClient _httpClient;
 
-    public PostService(HttpClient httpClient)
+    public PostService(HttpClient httpClient, IAIApprovalService aiApprovalService)
     {
         _httpClient = httpClient;
+        _aiApprovalService = aiApprovalService;
     }
 
     public async Task<List<Post>> GetPostsAsync()
@@ -30,6 +32,8 @@ public class PostService: IPostService
 
     public async Task<Post> CreatePostAsync(Post post)
     {
+       
+
         var response = await _httpClient.PostAsJsonAsync("api/post", post);
         return await response.Content.ReadFromJsonAsync<Post>();
     }

@@ -1,21 +1,20 @@
-using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.OpenApi.Models;
-using MarketplaceRepository.Data;
 using Marketplace.Models;
+using MarketPlaceDTO;
+using MarketplaceRepository.Data;
 using MarketplaceRepository.Interfaces;
 using MarketplaceRepository.Repositories;
-using MarketplaceServices.Services;
-using MarketplaceServices.Interfaces;
 using MarketPlaceRepository.Interfaces;
 using MarketPlaceRepository.Repositories;
+using MarketplaceServices.Interfaces;
+using MarketplaceServices.Services;
 using MarketPlaceServices.Interfaces;
 using MarketPlaceServices.Services;
-using MarketPlaceDTO;
-
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -84,9 +83,9 @@ builder.Services.AddScoped<IPasswordHasher<UserDto>, PasswordHasher<UserDto>>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUserDtoService, UserDtoService>();
 builder.Services.AddScoped<IPostRepository, PostRepository>();
-builder.Services.AddScoped<IPostService, PostService>();
+builder.Services.AddScoped<IPostDtoService, PostDtoService>();
 builder.Services.AddScoped<IItemRepository, ItemRepository>();
-builder.Services.AddScoped<IItemService, ItemService>();
+builder.Services.AddScoped<IItemDtoService, ItemDtoService>();
 builder.Services.AddScoped<ITransactionRepository, TransactionRepository>();
 builder.Services.AddScoped<ITransactionDtoService, TransactionDtoService>();
 builder.Services.AddScoped<IAIApprovalService, AIApprovalService>();
@@ -95,14 +94,11 @@ builder.Services.AddScoped<ICacheService, RedisCacheService>();
 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
-
 builder.Services.AddStackExchangeRedisCache(options =>
 {
     options.Configuration = builder.Configuration.GetConnectionString("Redis");
     options.InstanceName = "MarketplaceCache_";
 });
-
-
 
 var app = builder.Build();
 

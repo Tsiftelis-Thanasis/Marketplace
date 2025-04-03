@@ -1,29 +1,28 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System.Security.Claims;
+﻿using AutoMapper;
+using Marketplace.Models;
+using MarketPlaceDTO;
+using MarketPlaceModels.Enums;
+using MarketPlaceModels.Models;
+using MarketplaceRepository.Interfaces;
+using MarketplaceServices.Interfaces;
+using MarketPlaceServices.Services;
+using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using System.Text;
-using Marketplace.Models;
-using MarketplaceRepository.Interfaces;
-using Microsoft.Extensions.Configuration;
-using MarketPlaceServices.Services;
-using MarketPlaceDTO;
-using AutoMapper;
-using MarketplaceRepository.Repositories;
-using MarketPlaceModels.Enums;
-using MarketplaceServices.Interfaces;
-using Microsoft.Extensions.Caching.Distributed;
-using MarketPlaceModels.Models;
 
 namespace MarketplaceServices.Services
 {
-    public class UserDtoService: Service<User, UserDto>, IUserDtoService
+    public class UserDtoService : Service<User, UserDto>, IUserDtoService
     {
         private readonly IUserRepository _userRepository;
         private readonly IConfiguration _configuration;
         private readonly IMapper _mapper;
         private readonly IDistributedCache _cache;
-        public UserDtoService(IUserRepository userRepository, IConfiguration configuration, IMapper mapper, IDistributedCache cache) : 
+
+        public UserDtoService(IUserRepository userRepository, IConfiguration configuration, IMapper mapper, IDistributedCache cache) :
             base(userRepository, mapper, cache)
         {
             _userRepository = userRepository;
@@ -48,7 +47,7 @@ namespace MarketplaceServices.Services
         public async Task<UserDto?> GetUserByUsernameOrEmailAsync(string username, string email)
         {
             var user = await _userRepository.GetUserByUsernameOrEmailAsync(username, email);
-            return _mapper.Map<UserDto>(user); 
+            return _mapper.Map<UserDto>(user);
         }
 
         public async Task<UserDto> RegisterUserAsync(UserDto userDto)
@@ -91,7 +90,5 @@ namespace MarketplaceServices.Services
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
-
-
     }
 }

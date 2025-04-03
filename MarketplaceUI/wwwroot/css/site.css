@@ -49,7 +49,6 @@ a, .btn-link {
         top: 0.5rem;
     }
 
-
 .app-container {
     display: grid;
     grid-template-columns: 250px 1fr;
@@ -102,7 +101,6 @@ a, .btn-link {
     overflow-y: auto;
 }
 
-
 .dashboard-container {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -148,4 +146,3 @@ a, .btn-link {
     .card-link:hover {
         text-decoration: underline;
     }
-

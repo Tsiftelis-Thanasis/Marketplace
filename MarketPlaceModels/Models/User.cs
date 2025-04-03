@@ -1,6 +1,4 @@
 ﻿using MarketPlaceModels.Enums;
-using System;
-using System.Collections.Generic;
 
 namespace Marketplace.Models
 {
@@ -11,6 +9,6 @@ namespace Marketplace.Models
         public string Email { get; set; } = string.Empty;
         public string PasswordHash { get; set; } = string.Empty;
         public Roles Role { get; set; } = Roles.User;
-        public DateTime CreatedDate { get; set; } = DateTime.UtcNow;       
+        public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
     }
 }

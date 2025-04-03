@@ -1,15 +1,14 @@
 ﻿using MarketPlaceDTO;
 using MarketplaceServices.Interfaces;
-using MarketplaceServices.Services;
 using Microsoft.AspNetCore.Mvc;
 
 [ApiController]
 [Route("api/[controller]")]
 public class ItemController : ControllerBase
 {
-    private readonly IItemService _itemsService;
+    private readonly IItemDtoService _itemsService;
 
-    public ItemController(IItemService itemsService)
+    public ItemController(IItemDtoService itemsService)
     {
         _itemsService = itemsService;
     }
@@ -23,7 +22,6 @@ public class ItemController : ControllerBase
             return NotFound();
         }
         return Ok(items);
-
     }
 
     [HttpGet("{id}")]

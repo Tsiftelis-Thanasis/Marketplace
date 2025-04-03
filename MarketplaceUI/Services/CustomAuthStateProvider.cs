@@ -1,13 +1,10 @@
-﻿
+﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Components;
-
 
 namespace MarketplaceUI.Services
 {
-
     public class CustomAuthStateProvider : AuthenticationStateProvider
     {
         private readonly ILocalStorageService _localStorageService;
@@ -67,9 +64,7 @@ namespace MarketplaceUI.Services
 
             NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(user)));
         }
-
     }
-
 
     //public class CustomAuthStateProvider : AuthenticationStateProvider
     //{
@@ -123,6 +118,4 @@ namespace MarketplaceUI.Services
     //        NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(_anonymous)));
     //    }
     //}
-
-
 }

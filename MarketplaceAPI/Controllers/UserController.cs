@@ -1,10 +1,10 @@
 ﻿using Marketplace.Models;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Authorization;
-using MarketPlaceModels.Enums;
 using MarketPlaceDTO;
+using MarketPlaceModels.Enums;
 using MarketplaceServices.Interfaces;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 
 namespace MarketplaceAPI.Controllers
 {
@@ -85,7 +85,6 @@ namespace MarketplaceAPI.Controllers
             return Ok(Users);
         }
 
-
         [HttpPost]
         public async Task<IActionResult> CreateUser(UserDto UserDto)
         {
@@ -114,6 +113,5 @@ namespace MarketplaceAPI.Controllers
             }
             return NoContent();
         }
-
     }
 }

@@ -4,7 +4,7 @@ using MarketPlaceServices.Interfaces;
 
 namespace MarketplaceServices.Interfaces
 {
-    public interface IPostService : IService<Post, PostDto>
+    public interface IItemDtoService : IService<Item, ItemDto>
     {
     }
 }

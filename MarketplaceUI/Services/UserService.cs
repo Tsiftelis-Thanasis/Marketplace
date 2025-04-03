@@ -1,5 +1,4 @@
 ﻿using Marketplace.Models;
-using MarketPlaceServices.Interfaces;
 using MarketplaceUI.Interfaces;
 using System.Collections.Generic;
 using System.Net.Http;

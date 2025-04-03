@@ -9,5 +9,4 @@
         public DateTime CreatedDate { get; set; }
         public int BuyerId { get; set; }
     }
-
 }

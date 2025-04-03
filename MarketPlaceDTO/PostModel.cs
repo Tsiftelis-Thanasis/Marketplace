@@ -1,17 +1,22 @@
 ﻿using MarketPlaceModels.Enums;
+using System.ComponentModel.DataAnnotations;
 
-namespace Marketplace.Models
+namespace MarketPlaceDTO
 {
-    public class Post
+    public class PostModel
     {
         public int PostId { get; set; }
+
+        [Required, StringLength(100)]
         public string Title { get; set; } = string.Empty;
+
+        [Required, StringLength(500)]
         public string Description { get; set; } = string.Empty;
-        public string? ImageUrl { get; set; } // Store uploaded image URL
+
         public Status PostStatus { get; set; } = Status.Pending;
+
         public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
-        public int UserId { get; set; } // Foreign key for User
-        public User? User { get; set; }
-        public Item? Item { get; set; }
+
+        public int UserId { get; set; } // Set automatically
     }
 }

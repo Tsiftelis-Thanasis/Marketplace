@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using MarketPlaceServices.Interfaces;
 using Microsoft.Extensions.Caching.Distributed;
 using System.Text.Json;
-using MarketPlaceServices.Interfaces;
 
 namespace MarketPlaceServices.Services
 {
@@ -39,5 +34,4 @@ namespace MarketPlaceServices.Services
             await _cache.RemoveAsync(cacheKey);
         }
     }
-
 }
