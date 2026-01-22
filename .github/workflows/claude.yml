@@ -1,45 +1,169 @@
-name: Claude Code Assistant
+name: Claude AI Assistant
 
 on:
-  # Trigger when someone comments on an issue
   issue_comment:
     types: [created]
-  
-  # Trigger when someone comments on a PR
-  pull_request_review_comment:
-    types: [created]
-  
-  # Trigger when an issue is labeled with "claude-implement"
   issues:
-    types: [labeled]
-  
-  # Trigger when a PR is opened or updated
-  pull_request:
-    types: [opened, synchronize]
+    types: [opened, labeled]
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
 
 jobs:
-  claude-assistant:
-    # Only run when @claude is mentioned or specific label is added
+  claude-respond:
+    # Only run when @claude is mentioned or claude-implement label is added
     if: |
       (github.event_name == 'issue_comment' && contains(github.event.comment.body, '@claude')) ||
-      (github.event_name == 'pull_request_review_comment' && contains(github.event.comment.body, '@claude')) ||
-      (github.event_name == 'issues' && contains(github.event.issue.labels.*.name, 'claude-implement'))
+      (github.event_name == 'issues' && github.event.action == 'labeled' && github.event.label.name == 'claude-implement') ||
+      (github.event_name == 'issues' && github.event.action == 'opened' && contains(github.event.issue.labels.*.name, 'claude-implement'))
     
     runs-on: ubuntu-latest
-    
-    permissions:
-      contents: write
-      issues: write
-      pull-requests: write
     
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
       
-      - name: Run Claude Code
-        uses: anthropics/claude-code-action@v1
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
-          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          node-version: '20'
+      
+      - name: Get Issue Details
+        id: issue
+        run: |
+          echo "issue_number=${{ github.event.issue.number }}" >> $GITHUB_OUTPUT
+          echo "issue_title=${{ github.event.issue.title }}" >> $GITHUB_OUTPUT
+      
+      - name: Read CLAUDE.md if exists
+        id: claude_config
+        run: |
+          if [ -f "CLAUDE.md" ]; then
+            echo "config_exists=true" >> $GITHUB_OUTPUT
+            echo "CLAUDE_CONFIG<<EOF" >> $GITHUB_OUTPUT
+            cat CLAUDE.md >> $GITHUB_OUTPUT
+            echo "EOF" >> $GITHUB_OUTPUT
+          else
+            echo "config_exists=false" >> $GITHUB_OUTPUT
+          fi
+      
+      - name: Call Claude API
+        id: claude
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          # Get the issue body and user comment
+          ISSUE_BODY=$(cat <<'EOF'
+          ${{ github.event.issue.body }}
+          EOF
+          )
+          
+          USER_COMMENT=$(cat <<'EOF'
+          ${{ github.event.comment.body }}
+          EOF
+          )
+          
+          # Build the prompt
+          if [ "${{ github.event_name }}" = "issue_comment" ]; then
+            PROMPT="Issue: ${{ github.event.issue.title }}
+
+          Issue Description:
+          $ISSUE_BODY
+
+          User Comment:
+          $USER_COMMENT
+
+          Please analyze this issue and provide a helpful response. If code implementation is requested, provide clear guidance on what files need to be created or modified."
+          else
+            PROMPT="Issue: ${{ github.event.issue.title }}
+
+          Issue Description:
+          $ISSUE_BODY
+
+          This issue was labeled for Claude to implement. Please analyze what needs to be done and provide implementation guidance."
+          fi
+          
+          # Add CLAUDE.md context if it exists
+          if [ "${{ steps.claude_config.outputs.config_exists }}" = "true" ]; then
+            PROMPT="$PROMPT
+
+          Project Guidelines (from CLAUDE.md):
+          ${{ steps.claude_config.outputs.CLAUDE_CONFIG }}"
+          fi
+          
+          # Call Claude API
+          RESPONSE=$(curl -s https://api.anthropic.com/v1/messages \
+            -H "Content-Type: application/json" \
+            -H "x-api-key: $ANTHROPIC_API_KEY" \
+            -H "anthropic-version: 2023-06-01" \
+            -d @- <<PAYLOAD
+          {
+            "model": "claude-sonnet-4-20250514",
+            "max_tokens": 4096,
+            "messages": [
+              {
+                "role": "user",
+                "content": $(echo "$PROMPT" | jq -Rs .)
+              }
+            ]
+          }
+          PAYLOAD
+          )
+          
+          # Extract the response text
+          CLAUDE_RESPONSE=$(echo "$RESPONSE" | jq -r '.content[0].text // "Error: Unable to get response from Claude"')
+          
+          # Save response to file for the next step
+          echo "$CLAUDE_RESPONSE" > claude_response.txt
+      
+      - name: Post Claude's Response as Comment
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const fs = require('fs');
+            const response = fs.readFileSync('claude_response.txt', 'utf8');
+            
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: ${{ github.event.issue.number }},
+              body: `## 🤖 Claude's Response\n\n${response}\n\n---\n*Powered by Claude Sonnet 4*`
+            });
+      
+      - name: Create Implementation Branch (if requested)
+        if: contains(github.event.issue.body, 'create PR') || contains(github.event.comment.body, 'create PR')
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          
+          BRANCH_NAME="claude/issue-${{ github.event.issue.number }}-implementation"
+          git checkout -b "$BRANCH_NAME"
+          
+          # Create a placeholder file to show Claude analyzed the issue
+          mkdir -p .claude
+          echo "Issue #${{ github.event.issue.number }}: ${{ github.event.issue.title }}" > .claude/analysis.txt
+          echo "Analyzed by Claude on $(date)" >> .claude/analysis.txt
+          
+          git add .
+          git commit -m "Claude analysis for issue #${{ github.event.issue.number }}"
+          git push origin "$BRANCH_NAME"
+      
+      - name: Create Pull Request (if branch was created)
+        if: contains(github.event.issue.body, 'create PR') || contains(github.event.comment.body, 'create PR')
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const fs = require('fs');
+            const response = fs.readFileSync('claude_response.txt', 'utf8');
+            
+            await github.rest.pulls.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `[Claude] Fix for issue #${{ github.event.issue.number }}: ${{ github.event.issue.title }}`,
+              head: `claude/issue-${{ github.event.issue.number }}-implementation`,
+              base: 'main',
+              body: `## Claude's Implementation Plan\n\n${response}\n\n---\nCloses #${{ github.event.issue.number }}\n\n*Note: This is an automated analysis. Please review and implement the suggested changes.*`
+            });
